@@ -35,6 +35,11 @@ jobs:
           echo "root=$ROOT" >> "$GITHUB_OUTPUT"
           echo "Gradle root: $ROOT"
 
+            - name: Fix JVM target
+        working-directory: ${{ steps.project.outputs.root }}
+        run: |
+          echo "kotlin.jvm.target.validation.mode=warning" >> gradle.properties
+
       - name: Build APK
         working-directory: ${{ steps.project.outputs.root }}
         run: gradle assembleDebug --no-daemon

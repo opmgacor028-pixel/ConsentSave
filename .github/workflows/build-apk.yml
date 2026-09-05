@@ -35,7 +35,7 @@ jobs:
           echo "root=$ROOT" >> "$GITHUB_OUTPUT"
           echo "Gradle root: $ROOT"
 
-            - name: Fix JVM target
+      - name: Fix JVM target
         working-directory: ${{ steps.project.outputs.root }}
         run: |
           echo "kotlin.jvm.target.validation.mode=warning" >> gradle.properties

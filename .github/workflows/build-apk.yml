@@ -13,9 +13,9 @@ jobs:
 
       - name: Extract project
         run: |
-          unzip -o ConsentSave_Android_Project_HP_Build.zip -d project
-          cd project
-          find . -maxdepth 3 -type f | head -100
+          unzip -o ConsentSave_Android_Project_HP_Build.zip -d extracted
+          echo "Mencari Gradle project..."
+          find extracted -name settings.gradle.kts -o -name build.gradle.kts
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -28,12 +28,19 @@ jobs:
         with:
           gradle-version: "8.10.2"
 
+      - name: Find Gradle project
+        id: project
+        run: |
+          ROOT=$(dirname "$(find "$GITHUB_WORKSPACE/extracted" -name settings.gradle.kts -print -quit)")
+          echo "root=$ROOT" >> "$GITHUB_OUTPUT"
+          echo "Gradle root: $ROOT"
+
       - name: Build APK
-        working-directory: project
+        working-directory: ${{ steps.project.outputs.root }}
         run: gradle assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: ConsentSave-APK
-          path: project/app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ steps.project.outputs.root }}/app/build/outputs/apk/debug/app-debug.apk
